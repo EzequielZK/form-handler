@@ -16,7 +16,7 @@ export function useFormGroupHandler({
       label,
       defaultValue,
     });
-  }, []);
+  }, [name, required, label, defaultValue, formGroupHandlerContext]);
 
   const data = formGroupHandlerContext.forms[name] ?? {
     value: defaultValue ?? "",

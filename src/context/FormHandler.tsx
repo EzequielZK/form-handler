@@ -26,7 +26,7 @@ export type InitialInputParams = Omit<FormData, "errorMessage"> & {
 };
 
 type FormProps = {
-  onSubmit?: (forms: Forms) => void;
+  onSubmit?: (forms: FormInputs) => void;
   children: ReactNode;
 };
 
@@ -68,7 +68,7 @@ export default function FormHandler({ children, onSubmit }: FormProps) {
         });
       }
     },
-    [forms, setForms]
+    [forms]
   );
 
   const setFormInputs = (groupName: string, name: string, data: FormData) => {
@@ -86,14 +86,14 @@ export default function FormHandler({ children, onSubmit }: FormProps) {
     (groupName: string, name: string, value: any) => {
       setFormInputs(groupName, name, { value });
     },
-    [forms, setForms]
+    []
   );
 
   const setError = useCallback(
     (groupName: string, name: string, errorMessage: string | null) => {
       setFormInputs(groupName, name, { errorMessage });
     },
-    [forms, setForms]
+    []
   );
 
   const clear = (groupName: string) => {
@@ -127,7 +127,7 @@ export default function FormHandler({ children, onSubmit }: FormProps) {
 
       onSubmit(newForm);
     }
-  }, [forms, setForms]);
+  }, [onSubmit, forms]);
 
   return (
     <FormHandlerContext.Provider

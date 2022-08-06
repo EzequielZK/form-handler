@@ -3,7 +3,7 @@ import { useFormHandler } from "../hooks/useFormHandler";
 import { FormInputs } from "./FormHandler";
 
 type FormProps = {
-  onSubmit: (
+  onSubmit?: (
     data: FormInputs | null,
     requiredMessage?: string,
     errorMessage?: string
@@ -104,8 +104,9 @@ export default function FormGroupHandler({
     // for (key in forms) {
     //   newForm = { ...newForm, [key]: forms[key].value };
     // }
-
-    onSubmit(valid ? { ...forms, ...value } : null, requiredMessage, error);
+    if (onSubmit) {
+      onSubmit(valid ? { ...forms, ...value } : null, requiredMessage, error);
+    }
     if (clearOnSubmit && valid) {
       clear();
     }

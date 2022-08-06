@@ -1,8 +1,7 @@
-import { useState } from "react";
-import BasicForm from "./testComponents/BasicForm";
+import MultipleForms from "./testComponents/MultipleForms";
 
 function App() {
-  return <BasicForm />;
+  return <MultipleForms />;
 }
 
 export default App;
