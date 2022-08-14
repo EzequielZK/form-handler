@@ -2,6 +2,7 @@ import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import BasicForm from "./testComponents/BasicForm";
 import MultipleForms from "./testComponents/MultipleForms";
+import ValidationForm from "./testComponents/ValidationForm";
 
 const BasicUsage = BasicForm;
 const MultipleUsage = MultipleForms;
@@ -30,7 +31,7 @@ describe("Testing FormHandler context", () => {
   const multipleUsageAge = "25";
   const multipleUsageEmail = "john@example.com";
 
-  it(`should render ${basicTestingText} after submit`, () => {
+  it(`should render '${basicTestingText}' after submit`, () => {
     const { getByText, getByPlaceholderText, queryByText } = render(
       <BasicUsage />
     );
@@ -73,6 +74,50 @@ describe("Testing FormHandler context", () => {
     expect(getByText(`Name: ${multipleUsageName}`)).toBeInTheDocument();
     expect(getByText(`Age: ${multipleUsageAge}`)).toBeInTheDocument();
     expect(getByText(`Email: ${multipleUsageEmail}`)).toBeInTheDocument();
+  });
+});
+
+describe("Testing validations", () => {
+  const errorMessage = "Invalid email";
+  const wrongEmail = "email.com";
+  const correctEmail = "email@example.com";
+  const formInputErrors = "The following fields are incorrect:";
+  const formRequiredFieldsErrors = "The following fields are empty:";
+  const inputLabels = ["email1", "email2"];
+  it(`should render '${errorMessage}' until input value be correct`, () => {
+    const { getByText, getByPlaceholderText, queryByText } = render(
+      <ValidationForm />
+    );
+
+    const testInput = getByPlaceholderText("Test");
+
+    expect(queryByText(errorMessage)).not.toBeInTheDocument();
+    userEvent.type(testInput, wrongEmail);
+    expect(getByText(errorMessage)).toBeInTheDocument();
+
+    userEvent.clear(testInput);
+    expect(queryByText(errorMessage)).not.toBeInTheDocument();
+    userEvent.type(testInput, correctEmail);
+    expect(queryByText(errorMessage)).not.toBeInTheDocument();
+  });
+
+  it(`should render '${formInputErrors} ${inputLabels}' after submit`, () => {
+    const { getByText, getByPlaceholderText } = render(
+      <ValidationForm
+        inputErrorMessage={formInputErrors}
+        requiredErrorMessage={formRequiredFieldsErrors}
+        inputLabels={inputLabels}
+      />
+    );
+
+    const email1Input = getByPlaceholderText(inputLabels[0]);
+    const email2Input = getByPlaceholderText(inputLabels[1]);
+    const submitButton = getByText("Submit");
+
+    userEvent.type(email1Input, wrongEmail);
+    userEvent.type(email2Input, wrongEmail);
+    userEvent.click(submitButton);
+    expect(getByText(`${formInputErrors} ${inputLabels}`)).toBeInTheDocument();
   });
 });
 

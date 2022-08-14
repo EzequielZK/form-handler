@@ -1,12 +1,22 @@
 import { useContext, useEffect } from "react";
 import { FormGroupHandlerContext } from "../context/FormGroupHandler";
+import Validations from "../context/Validations";
+
+type FormGroupHandlerHookProps = {
+  name: string;
+  required?: boolean | string;
+  label?: string;
+  defaultValue?: any;
+  validation?: string;
+};
 
 export function useFormGroupHandler({
   name,
   required,
   label,
   defaultValue,
-}: any) {
+  validation,
+}: FormGroupHandlerHookProps) {
   const formGroupHandlerContext = useContext(FormGroupHandlerContext);
 
   useEffect(() => {
@@ -30,7 +40,15 @@ export function useFormGroupHandler({
   };
 
   const setValue = (value: any) => {
-    formGroupHandlerContext.setValue(name, value);
+    if (validation) {
+      const validations = Validations.instance.getValidations();
+      const validationToTest = validations[validation];
+      const { error } = validationToTest(value);
+      setError(error);
+      formGroupHandlerContext.setValue(name, value);
+    } else {
+      formGroupHandlerContext.setValue(name, value);
+    }
   };
 
   return {

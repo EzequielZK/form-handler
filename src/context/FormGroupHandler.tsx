@@ -5,12 +5,9 @@ import { FormInputs } from "./FormHandler";
 type FormProps = {
   onSubmit?: (
     data: FormInputs | null,
-    requiredMessage?: string,
-    errorMessage?: string
+    errorFields: string[],
+    requiredFields: string[]
   ) => void;
-  requiredErrorMessage?: string;
-  inputErrorMessage?: string;
-  showRequiredLabelsOnError?: boolean;
   name: string;
   clearOnSubmit?: boolean;
   children: ReactNode;
@@ -35,9 +32,6 @@ export default function FormGroupHandler({
   name,
   clearOnSubmit,
   submitForm,
-  requiredErrorMessage,
-  inputErrorMessage,
-  showRequiredLabelsOnError,
   children,
 }: FormProps) {
   const {
@@ -53,7 +47,7 @@ export default function FormGroupHandler({
 
   function validateRequiredInputs() {
     let hasValue = true;
-    let requiredMessage = requiredErrorMessage;
+    const requiredFields = [];
 
     let key;
 
@@ -63,49 +57,46 @@ export default function FormGroupHandler({
       if (!value && required) {
         setError(key, required);
         hasValue = false;
-
-        if (showRequiredLabelsOnError) {
-          requiredMessage += ` ${label}`;
+        if (label) {
+          requiredFields.push(label);
         }
       }
     }
-    return { hasValue, requiredMessage };
+    return { hasValue, requiredFields };
   }
 
   function validateInputErrors() {
     let inputValid = true;
-    let error = inputErrorMessage;
+    const errorFields = [];
 
     let key;
 
     for (key in forms) {
-      const { errorMessage, label } = forms[key];
+      const { errorMessage, value, label } = forms[key];
 
-      if (errorMessage) {
+      if (errorMessage && value) {
         inputValid = false;
-        if (showRequiredLabelsOnError) {
-          error += ` ${label}`;
+        if (label) {
+          errorFields.push(label);
         }
       }
     }
-    return { inputValid, error };
+    return { inputValid, errorFields };
   }
 
   function submit(value: any) {
-    const { hasValue, requiredMessage } = validateRequiredInputs();
+    const { hasValue, requiredFields } = validateRequiredInputs();
 
-    const { inputValid, error } = validateInputErrors();
+    const { inputValid, errorFields } = validateInputErrors();
 
     const valid = hasValue && inputValid;
 
-    // let newForm = {};
-    // let key;
-
-    // for (key in forms) {
-    //   newForm = { ...newForm, [key]: forms[key].value };
-    // }
     if (onSubmit) {
-      onSubmit(valid ? { ...forms, ...value } : null, requiredMessage, error);
+      onSubmit(
+        valid ? { ...forms, ...value } : null,
+        errorFields,
+        requiredFields
+      );
     }
     if (clearOnSubmit && valid) {
       clear();

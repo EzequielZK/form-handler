@@ -4,7 +4,7 @@ import { useFormGroupHandler } from "../hooks/useFormGroupHandler";
 export type InputProps = {
   name: string;
   //   mask?: MaskTypes;
-  //   validation?: ValidationTypes;
+  validation?: "isEmail";
   defaultValue?: any;
   maxLength?: number;
   label?: string;
@@ -21,7 +21,7 @@ export default function Input({
   defaultValue = "",
   helperText,
   //   mask,
-  //   validation,
+  validation,
   placeholder,
   required,
   maxLength,
@@ -31,38 +31,15 @@ export default function Input({
     required,
     label,
     defaultValue,
+    validation,
   });
 
   const { value, errorMessage } = data;
 
-  //   useEffect(() => {
-  //     if (value) {
-  //       validate();
-  //     }
-  //   }, [value]);
-
-  //   let maskToUse: MaskFunctionType;
-  //   let validationToTest: ValidationFunctionType;
-
-  //   if (mask) {
-  //     maskToUse = masks[mask];
-  //   }
-
-  //   if (validation) {
-  //     validationToTest = validations[validation];
-  //   }
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value: newValue } = event.target;
 
-    setValue(
-      //   maskToUse
-      //     ? maskToUse(newValue)
-      //     : maxLength
-      //     ? newValue.substring(0, maxLength)
-      //     : newValue
-      newValue
-    );
+    setValue(newValue);
     if (!newValue) {
       if (errorMessage) {
         setError(null);
@@ -70,20 +47,10 @@ export default function Input({
     }
   };
 
-  //   const validate = () => {
-  //     if (validationToTest) {
-  //       const { error } = validationToTest(value);
-  //       setError(error);
-  //     } else {
-  //       if (errorMessage) {
-  //         setError(null);
-  //       }
-  //     }
-  //   };
-
   return (
-    <>
+    <div>
       <input value={value} onChange={handleChange} placeholder={placeholder} />
-    </>
+      {errorMessage && <span>{errorMessage}</span>}
+    </div>
   );
 }
